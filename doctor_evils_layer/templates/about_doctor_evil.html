@@ -1,0 +1,50 @@
+{% extends "base_generic.html" %}
+{% block content %}
+  <h1>So, {{ user.username }}, you've reached my hidden file! Good Luck! -- Dr. E ... E for EVIL!!!!</h1>
+  </br>
+  <h2>Who am I?</h2>
+  <p>I am Doctor A. Evil. I was born in 1927 in the town of Evil of the constellation Evilness. I have three brothers. Jonathon, Joe, and Jerry. Jonathon is my favorite brother. We used to do... evil together. We were really good at math as well. We got staight E's. My favorite number was 94523934.</p>
+  </br>
+  <h2>Biographic Data</h2>
+  <li>First Name: Doctor</li>
+  <li>Middle Name: A</li>
+  <li>Last Name: Evil</li>
+  <li>Born: June 7, 1927</li>
+  <li>Place of Birth: Evilville, Evil of Evilness</li>
+  <li>Best Friend: Jeff Bezos</li>
+  <li>Zodiac Sign: Gemini</li>
+  <li>Favorite Hobby: Creating snapchat 'News' stories</li>
+  <div id="more_personal_details">
+    <var ssn='734-92-7483' real_favorite_color='None' username='doctor_evil' password='Jonathon94523934'>
+  </div>
+  </br>
+  <h2>Frequently Asked Questions</h2>
+  <h4>What is my defining moment?</h4>
+  <p>I'm really proud of the day Jonathon was riding his bike down the hill and fell off because he went too fast. I knew he would go too fast. It was my first evil.</p>
+  <h4>Childhood Role Models</h4>
+  <p>My dad Jeff and my mother Jane.</p>
+  <h4>Favorite Book</h4>
+  <p>The thesaurus. It's worse than the dictionary.</p>
+  <h4>Favorite Movie</h4>
+  <p>The Social Network. It feels like a personal autobiography.</p>
+  <h4>Favorite Color</h4>
+  <p>I like all the colors so much I can't pick one.</p>
+  <h4>Worst Nightmare</h4>
+  <p>An end to hunger.</p>
+  </br>
+  <h2>Notes Left by Agent ... 770</h2>
+  <button onClick="alert('Try poking around this page. Dr. Evil is likely an admin on the site. If we can find a way to access his credentials, we may be able to shut it down.')">Objective</button>
+  </br>
+  <h2>Hints</h2>
+  <button onClick="alert('Remember, an XSS attack occurs when the server does not sanitize executable code that will later be served embedded in HTML.')">XSS Hint 1</button>
+  <button onClick="alert('https://developer.mozilla.org/en-US/docs/Web/API/Node/removeChild is a good resource for help deleting nodes.')">XSS Hint 2</button>
+  <button onClick="alert('Consider using the &lt;script&gt; element as input when editing your profile.')">XSS Hint 3</button>
+  <button onClick="alert('There could be enough info on this page to guess his credentials.')">Hint 1</button>
+  <button onClick="alert('Check the inspector. Maybe he unintentionally served more data than he is showing.')">Hint 2</button>
+  </br>
+  </br>
+  </br>
+
+  <!--don't show if the user has already buried their profile.-->
+  <script>alert('Doctor Evil has been notified that you are accessing his private page!!!! You need to act fast to hide your profile from him! Rumor has it he does not understand how to protect against a cross site script attack. Protect your profile before reading on!')</script>
+{% endblock %}

@@ -90,6 +90,9 @@ celerybeat-schedule
 venv/
 ENV/
 
+# User uploaded files
+*Uploaded_File.html
+
 # Spyder project settings
 .spyderproject
 

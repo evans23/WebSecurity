@@ -1,0 +1,23 @@
+{% extends "base_generic.html" %}
+{% block content %}
+<div id="destroy_me">
+  <div id="inner_div_so_everything_go_boom_boom">
+    {% if profile.username == user.username %}
+      <h1>{{ user.username }}, Welcome to Doctor Evil's Personal World</h1>
+    {% else %}
+      <h1>Profile for: {{ profile.username }}</h1>
+    {% endif %}
+    </br>
+    <ul>
+        <li>First Name: {{ profile.first_name }}</li>
+        <li>Last Name: {{ profile.last_name }}</li>
+    </ul>
+    {% if profile.username == user.username %}
+      </br>
+      <h4><a href="{% url 'user-update' user.pk %}">Edit</a></h4>
+      </br>
+      <p>Welcome {{ profile.username }}! This is your personal profile in Dr. Evil's world. Take some time to explore. Enjoy!</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

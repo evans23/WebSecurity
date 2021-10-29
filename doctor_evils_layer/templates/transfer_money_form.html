@@ -1,0 +1,40 @@
+{% extends "base_generic.html" %}
+{% block content %}
+<form action="" method="post">
+  {% csrf_token %}
+  </br>
+  <h2>Welcome to the Dr. Evil Monetary Supporters Page. Donate money to the cause. Anything helps...</h2>
+  </br>
+  <h4>Current Account Value: {{ current_value }}</h4>
+  <p>{{ message }}</p>
+  <table>
+      {{ form.as_table }}
+  </table>
+  <input type="submit" value="Submit">
+</form>
+</br>
+<h4>Can I trust you?</h4>
+<p>Please submit a statement testifying about why you love evil. Ample evidence is expected.<br>This is an entry level task.<br>Please Note: We expect three plus years experience performing evil.</p>
+<p></p>
+<p></p>
+<form action="statements/" method="post" enctype="multipart/form-data">
+  <table>
+    {{ file_form.as_table }}
+  </table>
+  <input type="submit" name="Upload" value="Upload Statement on Evil">
+</form>
+<form action="statements/open/" method="get">
+  <input type="submit" name="View" value="View Evil Statement">
+</form>
+</br>
+</br>
+<h2>Notes Left by Agent ... 770</h2>
+<button onClick="alert('Doctor Evil has been recieving copious donations of late. We need to figure out a way to stem the flow. Rumor is that his website is not equipped with CSRF protections. See what you can think of for getting money from his account to ours. I have supplied you and our other agents sufficient funds to test some possibilities on yourselves prior to performing the attack. Make sure to only transfer money to other agents we have working the problem.')">Objective</button>
+
+</br>
+<h2>Hints</h2>
+<button onClick="alert('I would bet some pretty pennies that he reads all the files that get uploaded to the statements section.')">Hint 1</button>
+<button onClick="alert('Remember that in a CSRF attack, the user logs in with their credentials and sends requests as themselves with the data values the hacker selects. Without Doctor Evils credentials, you will not be able to watch money enter your account, but you will be able to test the file on yourself. If money leaves your account by merely opening the file, you can be confident it will leave his account as well when he opens the file.')">Hint 2</button>
+<button onClick="alert('Use the inspector to view both the HTML form for transfering money between accounts, and the actual network traffic and files that go out. By piecing these two together, you should be able to create a form that if opened by Doctor Evil while he is logged in, can transfer money to you.')">Hint 3</button>
+<button onClick="alert('This resource should be very helpful. https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/web_application_security#cross_site_request_forgery_csrf_protection')">Hint 4</button>
+{% endblock %}

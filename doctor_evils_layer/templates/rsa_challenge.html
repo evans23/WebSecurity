@@ -1,0 +1,25 @@
+{% extends "base_generic.html" %}
+{% block content %}
+  <h1>Doctor Evil's unbreakable encryption schemes.</h1>
+  {% for pair in question_form_dicts %}
+    <h3>Problem {{ forloop.counter }}:</h3>
+    {% if pair.question.create_rsa_pair %}
+      <p>Create a valid public/private key pair.</p>
+    {% else %}
+      <p>Given a public key with n={{ pair.question.public_key_n }} and e={{ pair.question.public_key_e }}, try and find the private key, d.</p>
+    {% endif %}
+    <p>{{ pair.question.message }}</p>
+    {% if pair.question.completed %}
+      <p>This problem is complete. n={{ pair.question.public_key_n }}, e={{ pair.question.public_key_e }}, and d={{ pair.question.private_key }}</p>
+    {% else %}
+      <form action="check-pair/{{ pair.question.pk }}/" method='post'>
+        {% csrf_token %}
+        <table>
+          {{ pair.form.as_table }}
+        </table>
+        <input type="submit" value="Submit">
+      </form>
+      <br>
+    {% endif %}
+  {% endfor %}
+{% endblock %}
