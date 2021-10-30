@@ -22,4 +22,17 @@
       <br>
     {% endif %}
   {% endfor %}
+  </br>
+  </br>
+  <h2>Notes Left by Agent ... 770</h2>
+  <button onClick="alert('Doctor evil appears to store his public keys on this page. His friends must use them to send him messages, or allow access somewhere. See if you can crack these.')">Objective</button>
+
+  </br>
+  <h2>Hints</h2>
+  <button onClick="alert('You likely need to create an algorithm on your computer to crack the bigger ones.')">Hint 1</button>
+  <button onClick="alert('Think about ways to exclude large portions of the set of possible private keys prior to checking their validity.')">Hint 2</button>
+  <button onClick="alert('Do not be surprised if the algorithm takes a minute to run. These can be cracked in under ten seconds, but that assumes a large exclusion.')">Hint 3</button>
+  <button onClick="alert('Take advantage of language specific libraries. Sympy in python has a prime number generator you can iterate over.')">Hint 4</button>
+  </br>
+  </br>
 {% endblock %}

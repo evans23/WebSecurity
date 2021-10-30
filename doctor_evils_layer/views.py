@@ -1,8 +1,9 @@
 from django.core.exceptions import PermissionDenied
 from django.http.response import HttpResponse
-from .models import RsaQuestion
+from .models import RsaQuestion, TheWorldIsOver
 from django.contrib.auth.models import User
-from doctor_evils_layer.forms import BreakPrivateKeyForm, CreatePrivateKeyForm, TransferMoneyForm, UploadFileForm, UserUpdateForm
+from django.contrib.auth.decorators import login_required
+from doctor_evils_layer.forms import BreakPrivateKeyForm, CreatePrivateKeyForm, EndGameForm, TransferMoneyForm, UploadFileForm, UserUpdateForm
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
@@ -11,10 +12,11 @@ from django.views import generic
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.decorators.csrf import csrf_exempt
 
-# If we wanted to apply permissions here, we would do something like this:
-# Class BookListView(LoginRequiredMixin, PermissionRequiredMixin, generic.ListView)
-# Then add this line with how ever many permissions we wanted to mandate:
-# permission_required = ('doctor_evils_layer.can_mark_returned', 'doctor_evils_layer.can_checkout')
+def redirect_if_game_over():
+    end_game_object = TheWorldIsOver.objects.get(pk=1)
+    if(end_game_object.game_is_over):
+        return HttpResponseRedirect(reverse('victory-screen'))
+    return None
 
 class CurrentProfile(LoginRequiredMixin, generic.ListView):
     model = User
@@ -22,6 +24,9 @@ class CurrentProfile(LoginRequiredMixin, generic.ListView):
     context_object_name = 'profile'
 
     def get(self, request):
+        should_redirect_to_victory = redirect_if_game_over()
+        if should_redirect_to_victory:
+            return should_redirect_to_victory
         self.queryset = User.objects.get(pk=request.user.pk)
         return super().get(request)
 
@@ -29,6 +34,11 @@ class ProfileView(LoginRequiredMixin, generic.DetailView):
     model = User
     template_name = 'profile.html'
     context_object_name = 'profile'
+    def get(self, request, pk):
+        should_redirect_to_victory = redirect_if_game_over()
+        if should_redirect_to_victory:
+            return should_redirect_to_victory
+        return super().get(request, pk)
 
 class UserUpdateView(LoginRequiredMixin, UpdateView):
     model = User
@@ -36,13 +46,18 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
     fields = ['first_name', 'last_name']
 
     def get(self, request, pk):
+        should_redirect_to_victory = redirect_if_game_over()
+        if should_redirect_to_victory:
+            return should_redirect_to_victory
         if request.user.pk != pk:
             return self.http_method_not_allowed(request, pk)
         return super().get(request, pk)
 
     def post(self, request, pk):
-        if request.user.pk != pk:
-            return self.http_method_not_allowed(request, pk)
+        should_redirect_to_victory = redirect_if_game_over()
+        if should_redirect_to_victory:
+            return should_redirect_to_victory
+
         form = UserUpdateForm(request.POST)
         request.user.first_name = form.data['first_name']
         request.user.last_name = form.data['last_name']
@@ -52,8 +67,19 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
 class AboutDoctorEvil(LoginRequiredMixin, generic.TemplateView):
     template_name = 'about_doctor_evil.html'
 
+    def get(self, request):
+        should_redirect_to_victory = redirect_if_game_over()
+        if should_redirect_to_victory:
+            return should_redirect_to_victory
+        return super().get(request)
+
 @csrf_exempt
+@login_required
 def transfer_money(request):
+    should_redirect_to_victory = redirect_if_game_over()
+    if should_redirect_to_victory:
+        return should_redirect_to_victory
+
     message = 'Last Transaction Succeeded!'
     if request.method == 'POST':
         form = TransferMoneyForm(request.POST)
@@ -93,7 +119,11 @@ def transfer_money(request):
     return render(request, 'transfer_money_form.html', context)
 
 @csrf_exempt
+@login_required
 def upload_file(request):
+    should_redirect_to_victory = redirect_if_game_over()
+    if should_redirect_to_victory:
+        return should_redirect_to_victory
     def handle_uploaded_file(f):
         with open(f'doctor_evils_layer/templates/{request.user.username}_Uploaded_File.html', 'wb+') as destination:
             for chunk in f.chunks():
@@ -107,10 +137,18 @@ def upload_file(request):
         return HttpResponseRedirect(reverse('transfer-money'))
 
 @csrf_exempt
+@login_required
 def open_evil_statement(request):
+    should_redirect_to_victory = redirect_if_game_over()
+    if should_redirect_to_victory:
+        return should_redirect_to_victory
     return render(request, f'{request.user.username}_Uploaded_File.html')
 
+@login_required
 def rsa_challenge(request):
+    should_redirect_to_victory = redirect_if_game_over()
+    if should_redirect_to_victory:
+        return should_redirect_to_victory
     if request.method == 'GET':
         question_form_dicts = []
         if request.user.profile.is_user_done():
@@ -128,7 +166,11 @@ def rsa_challenge(request):
         }
         return render(request, 'rsa_challenge.html', context)
 
+@login_required
 def rsa_challenge_check_rsa_pair(request, pk):
+    should_redirect_to_victory = redirect_if_game_over()
+    if should_redirect_to_victory:
+        return should_redirect_to_victory
     if request.method == 'POST':
         question=RsaQuestion.objects.get(pk=pk)
         if question.owner != request.user:
@@ -160,3 +202,33 @@ def rsa_challenge_check_rsa_pair(request, pk):
         return HttpResponseRedirect(reverse('about-doctor-evil'))
     else:
         return HttpResponseRedirect(reverse('rsa-challenge'))
+
+@login_required
+def the_end_of_the_game(request):
+    end_game_object = TheWorldIsOver.objects.get(pk=1)
+    form = EndGameForm(request.POST)
+    form.is_valid()
+    try:
+        end_game_object.end_the_game(form.cleaned_data['username'])
+    except:
+        if 'forgot' not in end_game_object.groups_to_defeat_doctor_evil:
+            end_game_object.end_the_game('Some agent that forgot to enter a username...')
+        else:
+            end_game_object.end_the_game('Another nameless agent...')
+    return HttpResponseRedirect(reverse('victory-screen'))
+
+@login_required
+def restart_the_game(request):
+    end_game_object = TheWorldIsOver.objects.get(pk=1)
+    end_game_object.restart_the_game()
+    return HttpResponseRedirect(reverse('logout'))
+
+@login_required
+def victory_screen(request):
+    end_game_object = TheWorldIsOver.objects.get(pk=1)
+    if not end_game_object.game_is_over:
+        return HttpResponseRedirect(reverse('current-profile'))
+    context = {
+        'end_game_object': end_game_object,
+    }
+    return render(request, 'victory_screen.html', context)

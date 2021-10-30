@@ -5,6 +5,17 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "RSA Gen",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/rsa_key_gen.py",
+            "args": [
+                "create_and_break",
+                "3354149",
+                "42789359"
+            ]
+        },
+        {
             "name": "Python: Django",
             "type": "python",
             "request": "launch",

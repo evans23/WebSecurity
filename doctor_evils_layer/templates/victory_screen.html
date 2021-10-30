@@ -1,0 +1,14 @@
+{% extends "base_generic.html" %}
+{% block content %}
+  <h1>DOCTOR EVILS REIGN OF EVIL HAS ENDED!!!</h1>
+  <br>
+  <h2>Due to the courage of our agents: {{ end_game_object.groups_to_defeat_doctor_evil }}</h2>
+  </br>
+  <p>Together, you have faced down the devil incarnate, the sultan of sweat, evil personified, a titan among the titans, and come out victorious. May you all cherish this moment as the crowning achievement of human existence that this truly is.</p>
+  {% if user.is_staff %}
+  <form action="/doctor-evils-layer/restart-the-game/" method="post">
+    {% csrf_token %}
+    <input type="submit" name="RestartGame" value="Resume the Game for Other Agents to Join the Legion of History">
+  </form>
+{% endif %}
+{% endblock %}

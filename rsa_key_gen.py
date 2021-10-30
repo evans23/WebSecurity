@@ -1,67 +1,103 @@
-# Usage: Script.py create prime1 prime2
-# Usage: Script.py break n e
-
-import sys
 import math
+import sympy
+import datetime
 
-exponent_choices = [29, 23, 19, 17, 13, 7, 5, 3]
+class RSA_key_gen:
+    exponent_choices = [29, 23, 19, 17, 13, 7, 5, 3]
 
-def calculate_d(phi, e):
-    d = 1
-    while (e*d) % phi != 1:
-        d += 1
-    return d
+    n = 0
+    d = 0
+    e = 0
+    
+    test_ints = [0, 1, 2, 4, 3, 6, 7, 9, 16, 23, 512, 1024, 2056, 513, 112, 111, 100, 233]
 
-def create_pair():
-    print(f'For primes: {numeric_arg1} {numeric_arg2}')
-    n = numeric_arg1 * numeric_arg2
-    phi = (numeric_arg1 - 1) * (numeric_arg2 - 1)
-    e = 3
-    for option in exponent_choices:
-        if option < phi and math.gcd(option, phi) == 1:
-            e = option
-    d = calculate_d(phi, e)
+    def __init__(self, min_prime_size=1, max_prime_size=100000000, *args, **kwargs):
+        self.prime1 = sympy.randprime(min_prime_size, max_prime_size)
+        self.prime2 = sympy.randprime(min_prime_size, max_prime_size)
+        duplicates = 0
+        while(self.prime2 == self.prime1):
+            self.prime2 = sympy.randprime(min_prime_size, max_prime_size)
+            duplicates += 1
+            if duplicates > 4:
+                print('Range invalid.')
+                exit()
 
-    print(f'The smallest corresponding RSA key pair is: n={n}, e={e}, phi={phi}, d={d}')
+    def rsa_pair_is_valid(self):
+        valid = True
+        for test_int in self.test_ints:
+            if test_int < self.n:
+                cyper_text = pow(test_int, self.e, mod=self.n)
+                plain_text = pow(cyper_text, self.d, mod=self.n)
+                if test_int != plain_text:
+                    valid = False
+                    break
+        return valid
 
-def break_pair():
-    print(f'For public key: n={numeric_arg1} and e={numeric_arg2}')
-    digits_to_cut = int((math.log10(numeric_arg1) + 1) / 2) - 1
-    print(digits_to_cut)
-    divisor = pow(10, digits_to_cut)
-    max_min = int(numeric_arg1 / divisor) + 1
-    print(max_min)
-    if max_min % 2 == 0:
-        max_min -= 1
-    current_guess = max_min
-    while (numeric_arg1 % current_guess != 0) and current_guess > 1:
-        current_guess -= 2
-        if current_guess < 4:
-            break
-    if current_guess <= 1:
-        print('Failed to find base primes.')
-        exit()
-    other_prime = numeric_arg1 / current_guess
-    phi = (current_guess - 1)*(other_prime - 1)
-    d = calculate_d(phi, numeric_arg2)
-    print(f'The private key is: {d}. With base primes: {current_guess} and {other_prime}.')
+    def calculate_d(phi, e):
+        multiple = 1
+        while (phi * multiple + 1) % e != 0:
+            multiple += 1
+        return (multiple * phi + 1) / e
 
-if len(sys.argv) < 4:
-    print('Supply at least 2 numeric arguments.')
-    print('Usage Option 1: Script.py create prime1 prime2')
-    print('Usage Option 2: Script.py break n e')
-    exit()
+    def create_pair(self):
+        print(f'For primes: {self.prime1} {self.prime2}')
+        self.n = self.prime1 * self.prime2
+        phi = (self.prime1 - 1) * (self.prime2 - 1)
+        self.e = 3
+        for option in self.exponent_choices:
+            if option < phi and math.gcd(option, phi) == 1:
+                self.e = option
+        self.d = RSA_key_gen.calculate_d(phi, self.e)
+        print(f'The smallest corresponding RSA key pair is: n={self.n}, e={self.e}, phi={phi}, d={self.d}')
+        self.d = int(self.d)
+        print(f'Key is valid: {self.rsa_pair_is_valid()}')
 
-action = sys.argv[1]
-numeric_arg1 = int(sys.argv[2])
-numeric_arg2 = int(sys.argv[3])
+    def break_pair(self):
+        print(f'For public key: n={self.n} and e={self.e}')
+        digits_to_cut = int((math.log10(self.n) + 1) / 2) - 1
+        divisor = pow(10, digits_to_cut)
+        max_min = int(self.n / divisor) + 1
+        if max_min % 2 == 0:
+            max_min -= 1
+        current_guess = max_min
 
-if action == 'create':
-    create_pair()
-elif action == 'break':
-    break_pair()
-else:
-    print('Invalid action command.')
-    print('Usage Option 1: Script.py create prime1 prime2')
-    print('Usage Option 2: Script.py break n e')
-    exit()
+        start_search = datetime.datetime.now()
+        prime_numbers = sympy.primerange(max_min)
+        for prime in prime_numbers:
+            if pow(self.n, 1, mod=prime) == 0:
+                current_guess = prime
+                break
+        if current_guess == max_min:
+            print('Failed to find base primes.')
+            exit()
+        print(f'Broke the primes in: {datetime.datetime.now() - start_search}')
+
+        other_prime = self.n / current_guess
+        phi = (current_guess - 1) * (other_prime - 1)
+        private_key = RSA_key_gen.calculate_d(phi, self.e)
+        print(f'The private key is: {private_key}. With base primes: {current_guess} and {other_prime}.')
+
+# if len(sys.argv) < 2:
+#     print('Supply at minimum an action argument.')
+#     print('Options are "create", "break d e", "create_and_break".')
+#     exit()
+# action = sys.argv[1]
+
+# key_gen = RSA_key_gen()
+
+# if action == 'create':
+#     print('Creating new RSA pair')
+#     key_gen.create_pair()
+# elif action == 'break':
+#     print('Breaking inputted RSA pair')
+#     key_gen.n = int(sys.argv[2])
+#     key_gen.e = int(sys.argv[3])
+#     key_gen.break_pair()
+# elif action == 'create_and_break':
+#     print('Creating and breaking RSA pair')
+#     key_gen.create_pair()
+#     key_gen.break_pair()
+# else:
+#     print('Invalid action command.')
+#     print('Options are "create", "break d e", "create_and_break".')
+#     exit()

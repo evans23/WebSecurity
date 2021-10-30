@@ -18,6 +18,14 @@
       </br>
       <p>Welcome {{ profile.username }}! This is your personal profile in Dr. Evil's world. Take some time to explore. Enjoy!</p>
     {% endif %}
+    {% if user.is_staff %}
+      <form action="/doctor-evils-layer/end-the-game/239854729587624398/" method="post">
+        {% csrf_token %}
+        <label for="end_game_entry">Please enter your username here:</label>
+        <input type="text" name="username" id="end_game_entry">
+        <input type="submit" name="EndGame" value="The Button to Never Push!! Please don't shut down my fun.">
+      </form>
+    {% endif %}
   </div>
 </div>
 {% endblock %}

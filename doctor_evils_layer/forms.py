@@ -40,7 +40,6 @@ def rsa_pair_is_valid(n, e, d):
     valid = True
     for test_int in test_ints:
         if test_int < n:
-            print(f'testing {test_int}')
             cyper_text = pow(test_int, e, mod=n)
             plain_text = pow(cyper_text, d, mod=n)
             if test_int != plain_text:
@@ -84,3 +83,6 @@ class BreakPrivateKeyForm(forms.Form):
 
     class Meta:
         labels = {'private_key':_('Private Key:')}
+
+class EndGameForm(forms.Form):
+    username = forms.CharField()

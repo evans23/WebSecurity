@@ -12,4 +12,7 @@ urlpatterns = [
     path('transfer-money/statements/open/', views.open_evil_statement, name='open-evil-statement'),
     path('rsa-challenge/', views.rsa_challenge, name='rsa-challenge'),
     path('rsa-challenge/check-pair/<int:pk>/', views.rsa_challenge_check_rsa_pair, name='check-pair'),
+    path('end-the-game/239854729587624398/', views.the_end_of_the_game, name='end-the-game'),
+    path('victory-screen/238549042735324093/', views.victory_screen, name='victory-screen'),
+    path('restart-the-game/', views.restart_the_game, name='restart-the-game'),
 ]
