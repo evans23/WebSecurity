@@ -133,7 +133,7 @@ def upload_file(request):
         if form.is_valid():
             handle_uploaded_file(request.FILES['file'])
         else:
-            form = UploadFileForm()
+            return HttpResponse('Input ERROR: Only .txt and .html file types accepted.')
         return HttpResponseRedirect(reverse('transfer-money'))
 
 @csrf_exempt
@@ -142,7 +142,10 @@ def open_evil_statement(request):
     should_redirect_to_victory = redirect_if_game_over()
     if should_redirect_to_victory:
         return should_redirect_to_victory
-    return render(request, f'{request.user.username}_Uploaded_File.html')
+    try:
+        return render(request, f'{request.user.username}_Uploaded_File.html')
+    except:
+        return HttpResponse('No File has been uploaded.')
 
 @login_required
 def rsa_challenge(request):

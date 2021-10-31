@@ -1,4 +1,3 @@
-import datetime
 from django import forms
 from django.contrib.auth.models import User
 from django.forms import ModelForm
@@ -35,6 +34,12 @@ class TransferMoneyForm(ModelForm):
 class UploadFileForm(forms.Form):
     title = forms.CharField(max_length=50)
     file = forms.FileField()
+
+    def clean_file(self):
+        ext = str.split(self.cleaned_data['file'].name, '.')[1]
+        valid_extensions = ['txt', 'html']
+        if not ext.lower() in valid_extensions:
+            raise ValidationError(_('File type not supported.'))
 
 def rsa_pair_is_valid(n, e, d):
     valid = True
