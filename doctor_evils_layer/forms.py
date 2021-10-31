@@ -29,7 +29,7 @@ class TransferMoneyForm(ModelForm):
     class Meta:
         model = BankAccount
         fields = ['transaction_amount', 'transfer_friend']
-        labels = {'transaction_amount': _('How much would you like to send me, Dr. Evil, today?'), 'transfer_to':_('Send me the money.')}
+        labels = {'transaction_amount': _('How much moeny would you like to transfer?'), 'transfer_to':_('Send me the money.')}
 
 class UploadFileForm(forms.Form):
     title = forms.CharField(max_length=50)
